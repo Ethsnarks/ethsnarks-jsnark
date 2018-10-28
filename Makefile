@@ -1,20 +1,41 @@
 JSNARK_SRC=jsnark/JsnarkCircuitBuilder/src
 PINOCCHIO=ethsnarks/bin/pinocchio
+JSNARK=java -cp jsnark.jar
 
-all: jsnark.jar sha_256.raw
+JSNARK_CIRCUITS=sha_256 AES_Circuit dot_product enc_example rsa2048_encryption rsa2048_sha256_sig_verify tree_64
+
+all: jsnark.jar $(addsuffix .raw, $(JSNARK_CIRCUITS))
 
 %.raw: %.arith %.in
-	$(PINOCCHIO) $< eval $(basename $<).in
-	$(PINOCCHIO) $< genkeys $@ $(basename $<).vk.json
-	$(PINOCCHIO) $< prove $(basename $<).in $@ $(basename $<).proof.json
-	$(PINOCCHIO) $< verify $(basename $<).vk.json $(basename $<).proof.json
+	time $(PINOCCHIO) $< eval $(basename $<).in
+	time $(PINOCCHIO) $< genkeys $@ $(basename $<).vk.json
+	time $(PINOCCHIO) $< prove $(basename $<).in $@ $(basename $<).proof.json
+	time $(PINOCCHIO) $< verify $(basename $<).vk.json $(basename $<).proof.json
 
 jsnark/LICENSE:
 	# Update submodules
 	git submodule update --init --recursive
 
 sha_256.in: jsnark.jar
-	java -cp jsnark.jar examples.generators.hash.SHA2CircuitGenerator
+	$(JSNARK) examples.generators.hash.SHA2CircuitGenerator
+
+AES_Circuit.in: jsnark.jar
+	$(JSNARK) examples.generators.blockciphers.AES128CipherCircuitGenerator
+
+rsa2048_sha256_sig_verify.in: jsnark.jar
+	$(JSNARK) examples.generators.rsa.RSASigVerCircuitGenerator
+
+rsa2048_encryption.in: jsnark.jar
+	$(JSNARK) examples.generators.rsa.RSAEncryptionCircuitGenerator
+
+tree_64.in: jsnark.jar
+	$(JSNARK) examples.generators.hash.MerkleTreeMembershipCircuitGenerator
+
+dot_product.in: jsnark.jar
+	$(JSNARK) examples.generators.math.DotProductCircuitGenerator
+
+enc_example.in: jsnark.jar
+	$(JSNARK) examples.generators.hybridEncryption.HybridEncryptionCircuitGenerator
 
 jsnark.jar: $(JSNARK_SRC)/util/Util.class
 	# Combine into .jar file
