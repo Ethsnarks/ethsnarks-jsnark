@@ -2,6 +2,11 @@
 
 This repository provides an example of integrating [jsnark](https://github.com/akosba/jsnark) circuits with [EthSnarks](http://github.com/HarryR/ethsnarks). It allows you to construct circuits using jsnark and [xjsnark](https://github.com/akosba/xjsnark) which can be proven on Ethereum.
 
+Checkout this repository into the same parent directory that contains `ethsnarks`:
+
+ * project-root
+   * ethsnarks
+   * ethsnarks-jsnark
 
 ## How it Works
 

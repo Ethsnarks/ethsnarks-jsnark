@@ -1,5 +1,5 @@
 JSNARK_SRC=jsnark/JsnarkCircuitBuilder/src
-PINOCCHIO=ethsnarks/bin/pinocchio
+PINOCCHIO=../ethsnarks/bin/pinocchio
 JSNARK_TEST=ethsnarks/bin/jsnark_test
 JSNARK=java -cp jsnark.jar
 
