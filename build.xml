@@ -1,0 +1,98 @@
+<project name="jsnark" default="dist" basedir=".">
+	<property name="src" location="jsnark/JsnarkCircuitBuilder/src/" />
+	<property name="build" location="build" />
+	<property name="build.main" location="${build}/main" />
+	<property name="build.tests" location="${build}/tests" />
+	<property name="dist" location="dist" />
+
+	<!-- bouncycastle dependency -->
+	<property name="bountycastle.version" value="1.60"/>
+    <property name="bountycastle.classifier" value="jdk15on"/>
+    <property name="bcpg.jar.file" value="bcpg-${bountycastle.classifier}-${bountycastle.version}.jar"/>
+    <property name="bcprov.jar.file" value="bcprov-${bountycastle.classifier}-${bountycastle.version}.jar"/>
+    <property name="bcprov.jar" value="${dist}/bcprov.jar" />
+
+    <!-- junit dependency -->
+    <property name="junit.version" value="4.12"/>
+    <property name="junit.jar.file" value="junit-${junit.version}.jar"/>
+    <property name="junit.jar" value="${dist}/junit.jar" />
+
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${build}" />
+		<mkdir dir="${build.main}" />
+		<mkdir dir="${build.tests}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<path id="build.classpath">
+		<pathelement location="${bcprov.jar}" />		
+	</path>
+
+	<path id="test.classpath">
+		<pathelement location="${junit.jar}" />
+		<pathelement location="${dist}/jsnark.jar" />
+		<path refid="build.classpath"/>
+	</path>
+
+	<target name="compile" depends="init,${bcprov.jar},${junit.jar}">
+		<javac includeantruntime="false" debug="on" destdir="${build.main}">
+			<src path="${src}"/>
+			<exclude name="examples/tests/**"/>
+			<exclude name="circuit/tests/**"/>
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+
+	<target name="tests-compile" depends="compile">
+		<javac includeantruntime="false" debug="on" sourcepath="" srcdir="${src}" destdir="${build.tests}">
+			<include name="**/*Test.java"/>
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile">
+		<jar jarfile="${dist}/jsnark.jar" basedir="${build.main}">
+			<!--
+			<manifest>
+				<attribute name="Main-Class" value="SFE.Compiler.SFECompiler" />
+			</manifest>
+			-->
+		</jar>
+	</target>
+
+	<target name="test" depends="junit">
+	</target>
+
+	<target name="junit" depends="tests-compile">
+		<junit printsummary="on" fork="true" haltonfailure="yes">
+			<classpath refid="test.classpath" />
+			<classpath>
+				<pathelement location="${build.tests}"/>
+			</classpath>
+			<formatter type="plain" />
+			<batchtest>
+				<fileset dir="${src}">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+	<target name="${bcprov.jar}" depends="init">
+		<get src="http://repo1.maven.org/maven2/org/bouncycastle/bcprov-${bountycastle.classifier}/${bountycastle.version}/${bcprov.jar.file}"
+                     dest="${bcprov.jar}"
+                     usetimestamp="true"/>
+	</target>
+
+	<target name="${junit.jar}" depends="init">
+		<get src="http://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar"
+                     dest="${junit.jar}"
+                     usetimestamp="true"/>
+	</target>
+</project>
