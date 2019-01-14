@@ -3,4 +3,5 @@
 *.jar
 *.raw
 *.json
+build/
 TEST-*.txt

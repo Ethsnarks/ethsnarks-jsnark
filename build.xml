@@ -44,7 +44,7 @@
 		</javac>
 	</target>
 
-	<target name="tests-compile" depends="compile">
+	<target name="tests-compile" depends="dist">
 		<javac includeantruntime="false" debug="on" sourcepath="" srcdir="${src}" destdir="${build.tests}">
 			<include name="**/*Test.java"/>
 			<classpath refid="test.classpath" />
